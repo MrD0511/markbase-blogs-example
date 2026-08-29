@@ -2,9 +2,9 @@ import { getAllBlogs, getBlogBySlug } from "@/lib/blogs";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import remarkDirective from 'remark-directive'
-import { remarkCallout } from '@/lib/markdown/remark-callout'
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import remarkDirective from "remark-directive";
+import { remarkCallout } from "@/lib/markdown/remark-callout";
 import { Callout } from "@/components/Callout";
 import CodeBlock from "@/components/CodeBlock";
 import BlogImage from "@/components/BlogImage";
@@ -16,9 +16,9 @@ import { remarkCodeGroup } from "@/lib/markdown/remark-codeGroup";
 import { CodeGroup } from "@/components/CodeGroup";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
-import ReadingProgress from "@/components/ReadingProgress";
-import TableOfContents from "@/components/TableOfContents";
-import BlogMetadata from "@/components/BlogMetadata";
+import { ArticleContents, ReadingRuler } from "@/components/blog/marginRuler";
+import { remarkImage } from "@/lib/markdown/remark-image";
+
 
 type Props = {
   params: { slug: string };
@@ -48,9 +48,17 @@ function extractHeadings(content: string) {
   return headings;
 }
 
+function formatDate(date?: string) {
+  if (!date) return null;
+  return new Date(date)
+    .toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })
+    .toUpperCase()
+    .replace(",", "");
+}
+
 const mdxComponents = {
   h1: ({ children }: any) => (
-    <h1 className="text-5xl lg:text-7xl font-bold mb-8 text-gray-900 dark:text-white leading-tight">
+    <h1 className="mb-8 text-4xl font-medium italic leading-tight sm:text-5xl [font-family:var(--font-display)] [color:var(--ink)]">
       {children}
     </h1>
   ),
@@ -60,7 +68,7 @@ const mdxComponents = {
         .toLowerCase()
         .replace(/[^\w\s-]/g, "")
         .replace(/\s+/g, "-")}
-      className="text-3xl lg:text-4xl font-bold mb-8 mt-16 text-gray-900 dark:text-white scroll-mt-32 border-t border-gray-200 dark:border-gray-800 pt-8"
+      className="mb-6 mt-16 scroll-mt-32 border-t pt-8 text-2xl font-medium italic sm:text-3xl [border-color:var(--paper-line)] [font-family:var(--font-display)] [color:var(--ink)]"
     >
       {children}
     </h2>
@@ -71,28 +79,28 @@ const mdxComponents = {
         .toLowerCase()
         .replace(/[^\w\s-]/g, "")
         .replace(/\s+/g, "-")}
-      className="text-2xl lg:text-3xl font-semibold mb-6 mt-12 text-gray-800 dark:text-gray-100 scroll-mt-32"
+      className="mb-5 mt-12 scroll-mt-32 text-xl font-semibold sm:text-2xl [color:var(--ink)]"
     >
       {children}
     </h3>
   ),
   h4: ({ children }: any) => (
-    <h4 className="text-xl lg:text-2xl font-semibold mb-4 mt-8 text-gray-800 dark:text-gray-100">
+    <h4 className="mb-4 mt-8 text-lg font-semibold [color:var(--ink)]">
       {children}
     </h4>
   ),
   p: ({ children }: any) => (
-    <p className="text-base lg:text-lg text-gray-700 dark:text-gray-300 mb-7 leading-relaxed">
+    <p className="mb-6 text-[16px] leading-[1.75] sm:text-[17px] [color:var(--ink-soft)]">
       {children}
     </p>
   ),
   ul: ({ children }: any) => (
-    <ul className="list-disc list-outside ml-6 mb-8 text-gray-700 dark:text-gray-300 space-y-4 text-base lg:text-lg">
+    <ul className="mb-7 ml-6 list-disc space-y-3 text-[16px] leading-relaxed [color:var(--ink-soft)]">
       {children}
     </ul>
   ),
   ol: ({ children }: any) => (
-    <ol className="list-decimal list-outside ml-6 mb-8 text-gray-700 dark:text-gray-300 space-y-4 text-base lg:text-lg">
+    <ol className="mb-7 ml-6 list-decimal space-y-3 text-[16px] leading-relaxed [color:var(--ink-soft)]">
       {children}
     </ol>
   ),
@@ -100,63 +108,55 @@ const mdxComponents = {
   code: ({ children, className }: any) => {
     if (!className) {
       return (
-        <code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded font-mono text-sm">
+        <code className="rounded-[3px] px-1.5 py-0.5 text-[0.85em] [background:var(--paper-dim)] [color:var(--teal-deep)] [font-family:var(--font-mono)]">
           {children}
         </code>
       );
     }
-    return (
-      <code className={className}>
-        {children}
-      </code>
-    );
+    return <code className={className}>{children}</code>;
   },
   pre: ({ children }: any) => <CodeBlock>{children}</CodeBlock>,
   blockquote: ({ children }: any) => (
-    <blockquote className="border-l-4 border-blue-500 dark:border-blue-400 pl-6 py-4 my-8 bg-blue-50 dark:bg-blue-900/20 rounded-r-lg text-gray-700 dark:text-gray-300 italic text-base lg:text-lg">
+    <blockquote className="my-8 border-l-2 py-1 pl-6 text-[16px] italic leading-relaxed [border-color:var(--ochre)] [color:var(--ink-soft)]">
       {children}
     </blockquote>
   ),
   a: ({ children, href }: any) => (
     <a
       href={href}
-      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline underline-offset-2 transition-colors"
+      className="underline decoration-1 underline-offset-2 transition-colors [color:var(--teal)] hover:[color:var(--teal-deep)]"
     >
       {children}
     </a>
   ),
-  img: ({ src, alt }: any) => <BlogImage src={src} alt={alt} />,
+  img: ({ src, alt, title }: any) => (
+    <BlogImage src={src} alt={alt} title={title} />
+  ),
   table: ({ children }: any) => (
-    <div className="overflow-x-auto my-8">
-      <table className="w-full border-collapse border border-gray-300 dark:border-gray-700">
+    <div className="my-8 overflow-x-auto">
+      <table className="w-full border-collapse border [border-color:var(--paper-line)] text-[14px]">
         {children}
       </table>
     </div>
   ),
   thead: ({ children }: any) => (
-    <thead className="bg-gray-50 dark:bg-gray-800">
-      {children}
-    </thead>
+    <thead className="[background:var(--paper-dim)]">{children}</thead>
   ),
-  tbody: ({ children }: any) => (
-    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-      {children}
-    </tbody>
+  tbody: ({ children }: any) => <tbody>{children}</tbody>,
+  tr: ({ children }: any) => (
+    <tr className="border-b [border-color:var(--paper-line)]">{children}</tr>
   ),
-  tr: ({ children }: any) => <tr>{children}</tr>,
   th: ({ children }: any) => (
-    <th className="border border-gray-300 dark:border-gray-700 px-4 py-3 text-left font-semibold text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-800">
+    <th className="border [border-color:var(--paper-line)] px-4 py-3 text-left font-semibold [color:var(--ink)]">
       {children}
     </th>
   ),
   td: ({ children }: any) => (
-    <td className="border border-gray-300 dark:border-gray-700 px-4 py-3 text-gray-700 dark:text-gray-300">
+    <td className="border [border-color:var(--paper-line)] px-4 py-3 [color:var(--ink-soft)]">
       {children}
     </td>
   ),
-  hr: () => (
-    <hr className="my-12 border-gray-300 dark:border-gray-700" />
-  ),
+  hr: () => <hr className="my-12 [border-color:var(--paper-line)]" />,
 };
 
 export async function generateStaticParams() {
@@ -172,27 +172,24 @@ export default async function BlogPage({ params }: Props) {
 
   if (!blog) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-gray-950">
-        <div className="text-center space-y-6">
-          <div>
-            <h1 className="text-5xl lg:text-6xl font-bold mb-4 text-gray-900 dark:text-white">
-              404
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400">
-              Post not found
-            </p>
-          </div>
-          <p className="text-gray-600 dark:text-gray-400 max-w-md">
-            The blog post you're looking for doesn't exist or has been removed.
-          </p>
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
-          >
-            <ArrowLeft size={18} />
-            Back to blog
-          </Link>
-        </div>
+      <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] [font-family:var(--font-mono)] [color:var(--ochre)]">
+          404
+        </p>
+        <h1 className="mb-4 text-4xl font-medium italic [font-family:var(--font-display)] [color:var(--ink)]">
+          Entry not found
+        </h1>
+        <p className="mb-8 max-w-md text-[15px] [color:var(--ink-soft)]">
+          The entry you're looking for doesn't exist, or has been removed
+          from the index.
+        </p>
+        <Link
+          href="/blogs"
+          className="inline-flex items-center gap-2 text-[13px] font-medium [font-family:var(--font-mono)] [color:var(--teal)] hover:[color:var(--teal-deep)]"
+        >
+          <ArrowLeft size={14} />
+          Back to index
+        </Link>
       </div>
     );
   }
@@ -201,146 +198,134 @@ export default async function BlogPage({ params }: Props) {
   const headings = extractHeadings(blog.content);
 
   return (
-    <>
-      <ReadingProgress />
+    <article>
 
-      <article className="min-h-screen bg-white dark:bg-gray-950">
-        {/* Enhanced Sticky Header */}
-        <header className="sticky top-0 z-40 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium"
-            >
-              <ArrowLeft size={18} />
-              <span className="hidden sm:inline">Back to blog</span>
-            </Link>
-            <span className="text-xs font-mono text-gray-500 dark:text-gray-600">
-              {readingTime} min read
-            </span>
-          </div>
-        </header>
+      {/* Sticky sub-header */}
+      <header className="sticky top-14 z-30 border-b backdrop-blur [background:color-mix(in_srgb,var(--paper)_85%,transparent)] [border-color:var(--paper-line)]">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-3 sm:px-8">
+          <Link
+            href="/blogs"
+            className="inline-flex items-center gap-2 text-[13px] font-medium transition-colors [font-family:var(--font-mono)] [color:var(--ink-soft)] hover:[color:var(--teal)]"
+          >
+            <ArrowLeft size={15} />
+            <span className="hidden sm:inline">Index</span>
+          </Link>
+          <span className="text-[11px] tracking-wide [font-family:var(--font-mono)] [color:var(--ink-faint)]">
+            {readingTime} min read
+          </span>
+        </div>
+      </header>
 
-        {/* Main Content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-20">
-          {/* Hero Section */}
-          <div className="mb-16 max-w-3xl">
-            <h1 className="text-5xl lg:text-7xl font-bold mb-6 text-gray-900 dark:text-white leading-tight">
-              {blog.title}
-            </h1>
-            {blog.excerpt && (
-              <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-400 leading-relaxed font-light">
-                {blog.excerpt}
-              </p>
+      <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-8 md:py-20">
+        {/* Hero */}
+        <div className="mx-auto mb-14 max-w-2xl">
+          <div className="mb-5 flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.14em] [font-family:var(--font-mono)] [color:var(--ink-faint)]">
+            {formatDate(blog.date) && <span>{formatDate(blog.date)}</span>}
+            {blog.author && (
+              <>
+                <span aria-hidden>·</span>
+                <span>{blog.author}</span>
+              </>
             )}
+            <span aria-hidden>·</span>
+            <span>{readingTime} min read</span>
           </div>
-
-          {/* Enhanced Metadata */}
-          <BlogMetadata
-            date={blog.date}
-            author={blog.author}
-            readingTime={readingTime}
-            slug={slug}
-            title={blog.title}
-          />
-
-          {/* Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12">
-            {/* Main Content */}
-            <div className="lg:col-span-3 order-2 lg:order-1">
-              <div className="prose prose-lg dark:prose-invert max-w-none">
-                <MDXRemote
-                  source={blog.content}
-                  components={{
-                    ...mdxComponents,
-                    Callout,
-                    Youtube,
-                    Faq,
-                    CodeGroup,
-                  }}
-                  options={{
-                    mdxOptions: {
-                      remarkPlugins: [
-                        remarkGfm,
-                        remarkDirective,
-                        remarkCallout,
-                        remarkYoutube,
-                        remarkFaq,
-                        remarkCodeGroup,
-                      ],
-                      rehypePlugins: [rehypeHighlight],
-                    },
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Sidebar - Table of Contents */}
-            <div className="lg:col-span-1 order-1 lg:order-2">
-              {headings.length > 0 && <TableOfContents headings={headings} />}
-            </div>
-          </div>
+          <h1 className="mb-6 text-4xl font-medium italic leading-[1.08] sm:text-6xl [font-family:var(--font-display)] [color:var(--ink)]">
+            {blog.title}
+          </h1>
+          {blog.excerpt && (
+            <p className="text-lg leading-relaxed sm:text-xl [color:var(--ink-soft)]">
+              {blog.excerpt}
+            </p>
+          )}
         </div>
 
-        {/* Related Posts Section */}
-        {blog.relatedPosts && blog.relatedPosts.length > 0 && (
-          <section className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-20">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-              <h2 className="text-3xl lg:text-4xl font-bold mb-12 text-gray-900 dark:text-white">
-                Related articles
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {blog.relatedPosts.map((post: any) => (
-                  <Link
-                    key={post.slug}
-                    href={`/blog/${post.slug}`}
-                    className="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-md transition-all duration-300"
-                  >
-                    <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        {/* Content grid */}
+        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-12 lg:max-w-none lg:grid-cols-[minmax(0,42rem)_16rem] lg:justify-center lg:gap-16">
+          <div className="min-w-0">
+            <MDXRemote
+              source={blog.content}
+              components={{ ...mdxComponents, Callout, Youtube, Faq, CodeGroup }}
+              options={{
+                mdxOptions: {
+                  remarkPlugins: [
+                    remarkGfm,
+                    remarkDirective,
+                    remarkCallout,
+                    remarkYoutube,
+                    remarkFaq,
+                    remarkCodeGroup,
+                    remarkImage
+                  ],
+                  rehypePlugins: [rehypeHighlight],
+                },
+              }}
+            />
+          </div>
+
+          <ArticleContents headings={headings} />
+        </div>
+      </div>
+
+      {/* Related entries */}
+      {blog.relatedPosts && blog.relatedPosts.length > 0 && (
+        <section className="border-t [background:var(--paper-dim)] [border-color:var(--paper-line)]">
+          <div className="mx-auto max-w-[1400px] px-4 py-16 sm:px-8">
+            <p className="mb-8 text-[11px] font-semibold uppercase tracking-[0.18em] [font-family:var(--font-mono)] [color:var(--ink-faint)]">
+              Related entries
+            </p>
+            <div className="mx-auto max-w-3xl">
+              {blog.relatedPosts.map((post: any, i: number) => (
+                <Link
+                  key={post.slug}
+                  href={`/blogs/${post.slug}`}
+                  className="group grid grid-cols-[2.5rem_1fr] gap-4 border-b py-6 [border-color:var(--paper-line)] last:border-b-0"
+                >
+                  <span className="pt-1 text-[13px] tabular-nums [font-family:var(--font-mono)] [color:var(--ink-faint)]">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 className="mb-1.5 text-lg font-medium transition-colors sm:text-xl [font-family:var(--font-display)] [color:var(--ink)] group-hover:[color:var(--teal-deep)]">
                       {post.title}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-                      {post.excerpt}
-                    </p>
+                    {post.excerpt && (
+                      <p className="mb-2 line-clamp-2 text-[14px] leading-relaxed [color:var(--ink-soft)]">
+                        {post.excerpt}
+                      </p>
+                    )}
                     {post.date && (
-                      <time className="text-xs text-gray-500 dark:text-gray-500 font-medium">
-                        {new Date(post.date).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
+                      <time className="text-[10px] uppercase tracking-wide [font-family:var(--font-mono)] [color:var(--ink-faint)]">
+                        {formatDate(post.date)}
                       </time>
                     )}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Footer Section */}
-        <section className="border-t border-gray-200 dark:border-gray-800 mt-20 py-12">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  More articles
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Check out our blog for more insights and tutorials.
-                </p>
-              </div>
-              <Link
-                href="/blog"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
-              >
-                View all posts
-                <ArrowLeft size={16} className="rotate-180" />
-              </Link>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
-      </article>
+      )}
+
+      {/* Footer */}
+      <section className="border-t [border-color:var(--paper-line)]">
+        <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-6 px-4 py-12 sm:flex-row sm:items-center sm:px-8">
+          <div>
+            <p className="mb-1 text-[15px] font-medium [color:var(--ink)]">
+              More from the journal
+            </p>
+            <p className="text-[13px] [color:var(--ink-soft)]">
+              Every entry, filed in order, is in the index.
+            </p>
+          </div>
+          <Link
+            href="/blogs"
+            className="inline-flex items-center gap-2 text-[13px] font-medium [font-family:var(--font-mono)] [color:var(--teal)] hover:[color:var(--teal-deep)]"
+          >
+            View all entries
+            <ArrowRight size={14} />
+          </Link>
+        </div>
+      </section>
 
       <style>{`
         @media (prefers-reduced-motion: reduce) {
@@ -351,6 +336,6 @@ export default async function BlogPage({ params }: Props) {
           }
         }
       `}</style>
-    </>
+    </article>
   );
 }

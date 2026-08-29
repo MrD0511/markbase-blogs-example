@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ModeToggle } from "../common/modeToggle";
 import { BlogSidebar } from "@/components/blog/sidebar";
@@ -12,45 +11,48 @@ export function BlogNavbar({ blogs }: { blogs: any[] }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200/70 dark:border-gray-800/70">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link
-          href="/blogs"
-          className="flex items-center gap-2 font-semibold text-gray-900 dark:text-white"
-        >
-          <span className="h-2 w-2 rounded-full bg-blue-500" aria-hidden />
-          Journal
+    <header className="sticky top-0 z-40 h-14 border-b backdrop-blur [background:color-mix(in_srgb,var(--paper)_85%,transparent)] [border-color:var(--paper-line)]">
+      <div className="mx-auto flex h-full max-w-[1400px] items-center justify-between px-4 sm:px-8">
+        <Link href="/blogs" className="flex items-center gap-1.5">
+          <span className="text-[14px] font-semibold uppercase tracking-[0.14em] [font-family:var(--font-mono)] [color:var(--ink)]">
+            Journal
+          </span>
+          <span className="text-base leading-none" style={{ color: "var(--ochre)" }}>
+            ·
+          </span>
         </Link>
 
-        <div className="flex items-center gap-1">
+        <nav className="flex items-center gap-1">
           <Link
             href="/"
-            className="hidden sm:inline-block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-3 py-2 transition-colors"
+            className="hidden px-3 py-2 text-[13px] tracking-wide transition-colors sm:inline-block [font-family:var(--font-mono)] [color:var(--ink-soft)] hover:[color:var(--teal)]"
           >
             Home
           </Link>
           <Link
             href="/blogs"
-            className="hidden sm:inline-block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-3 py-2 transition-colors"
+            className="hidden px-3 py-2 text-[13px] tracking-wide transition-colors sm:inline-block [font-family:var(--font-mono)] [color:var(--ink-soft)] hover:[color:var(--teal)]"
           >
-            Blog
+            Index
           </Link>
+
           <ModeToggle />
 
           <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger >
-              <Button variant="ghost" size="icon" className="lg:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Open menu</span>
-              </Button>
+            <SheetTrigger
+              aria-label="Open menu"
+              className="ml-1 flex h-9 w-9 items-center justify-center rounded-sm transition-colors hover:[background:var(--paper-dim)] lg:hidden"
+            >
+              <Menu className="h-4 w-4" style={{ color: "var(--ink)" }} />
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 dark:bg-gray-950">
-              <div className="mt-8">
-                <BlogSidebar blogs={blogs} />
-              </div>
+            <SheetContent
+              side="left"
+              className="journal w-80 border-0 p-0 [background:var(--paper)]"
+            >
+              <BlogSidebar blogs={blogs} mobile />
             </SheetContent>
           </Sheet>
-        </div>
+        </nav>
       </div>
     </header>
   );

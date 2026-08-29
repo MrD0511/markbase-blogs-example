@@ -46,6 +46,21 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Journal (blog) design tokens — safe to reference even though the
+     underlying custom properties are only defined inside .journal below.
+     Generates utilities like bg-paper, text-ink, border-paper-line,
+     text-teal, font-display for use in the blog components. */
+  --color-paper: var(--paper);
+  --color-paper-dim: var(--paper-dim);
+  --color-paper-line: var(--paper-line);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-teal: var(--teal);
+  --color-teal-deep: var(--teal-deep);
+  --color-ochre: var(--ochre);
+  --font-display: var(--font-display);
 }
 
 :root {
@@ -115,6 +130,42 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/*
+  Journal (blog) design tokens.
+
+  Scoped to .journal instead of :root so the blog gets its own palette and
+  type system without touching the rest of the site's shadcn theme above.
+  app/blogs/layout.tsx wraps the whole blog section in a `journal` class,
+  so every element inside it (index, articles, sidebar, navbar) inherits
+  these via normal CSS cascade.
+*/
+.journal {
+  --paper: #EDEFEA;
+  --paper-dim: #E3E6DD;
+  --paper-line: #D6DACF;
+  --ink: #171B1A;
+  --ink-soft: #565C53;
+  --ink-faint: #8B9086;
+  --teal: #2F6F5E;
+  --teal-deep: #1D473B;
+  --ochre: #B4832A;
+  --font-display: 'Newsreader', ui-serif, Georgia, serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+.dark .journal {
+  --paper: #14171A;
+  --paper-dim: #1B1F1D;
+  --paper-line: #292E2A;
+  --ink: #ECEDE7;
+  --ink-soft: #9BA096;
+  --ink-faint: #656A61;
+  --teal: #5FB89D;
+  --teal-deep: #86D4BA;
+  --ochre: #DBAE58;
 }
 
 @layer base {

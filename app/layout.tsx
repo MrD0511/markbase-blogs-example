@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Newsreader } from 'next/font/google';
 import "./globals.css";
 import { ThemeProvider } from "@/components/common/themeProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+export const newsreader = Newsreader({
+  subsets: ['latin'],
+  display: 'swap',
+  style: ['normal', 'italic'], // Optional: Include if you plan to use italics
+  variable: '--font-newsreader', // Defines a CSS variable for Tailwind integration
 });
 
 export const metadata: Metadata = {
@@ -24,11 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
+  <html lang="en" suppressHydrationWarning>
+      <body className={`${newsreader.variable} min-h-full flex flex-col `}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
