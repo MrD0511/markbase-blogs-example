@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 function slugify(title: string) {
-  return title.replace(/\s+/g, "-").toLowerCase();
+  return title.replace(/\s+/g, "-");
 }
 
 function formatDate(date?: string) {
