@@ -162,7 +162,7 @@ const mdxComponents = {
 export async function generateStaticParams() {
   const blogs = await getAllBlogs();
   return blogs.map((blog: any) => ({
-    slug: blog.slug || blog.title.replace(/\s+/g, "-").toLowerCase(),
+    slug: blog.slug || blog.title.replace(/\s+/g, "-"),
   }));
 }
 
