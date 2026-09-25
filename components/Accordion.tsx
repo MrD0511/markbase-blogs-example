@@ -1,22 +1,22 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion"
 
 type FaqProps = {
-    question: string,
+    label: string,
     children: React.ReactNode
 }
 
-export default function Faq(
-    { question, children }: FaqProps
+export default function AccordionComponent(
+    { label, children }: FaqProps
 ){
 
     return (
         <Accordion className="w-full my-4">
             <AccordionItem 
-                value="faq"
+                value="accordion"
                 className="rounded-lg border bg-card px-4"
             >
                 <AccordionTrigger className="text-left font-medium text-lg">
-                    {question || 'Untitled question'}
+                    {label || 'Untitled label'}
                 </AccordionTrigger>
 
                 <AccordionContent>

@@ -10,15 +10,14 @@ import CodeBlock from "@/components/CodeBlock";
 import BlogImage from "@/components/BlogImage";
 import { remarkYoutube } from "@/lib/markdown/remark-youtube";
 import Youtube from "@/components/Youtube";
-import { remarkFaq } from "@/lib/markdown/remark-faq";
-import Faq from "@/components/Faq";
+import { remarkAccordion } from "@/lib/markdown/remark-accordion";
 import { remarkCodeGroup } from "@/lib/markdown/remark-codeGroup";
 import { CodeGroup } from "@/components/CodeGroup";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
-import { ArticleContents, ReadingRuler } from "@/components/blog/marginRuler";
+import { ArticleContents,  } from "@/components/blog/marginRuler";
 import { remarkImage } from "@/lib/markdown/remark-image";
-
+import AccordionComponent from "@/components/Accordion";
 
 type Props = {
   params: { slug: string };
@@ -194,8 +193,8 @@ export default async function BlogPage({ params }: Props) {
     );
   }
 
-  const readingTime = calculateReadingTime(blog.content);
-  const headings = extractHeadings(blog.content);
+  const readingTime = calculateReadingTime(blog.body);
+  const headings = extractHeadings(blog.cbody);
 
   return (
     <article>
@@ -244,8 +243,8 @@ export default async function BlogPage({ params }: Props) {
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-12 lg:max-w-none lg:grid-cols-[minmax(0,42rem)_16rem] lg:justify-center lg:gap-16">
           <div className="min-w-0">
             <MDXRemote
-              source={blog.content}
-              components={{ ...mdxComponents, Callout, Youtube, Faq, CodeGroup }}
+              source={blog.body}
+              components={{ ...mdxComponents, Callout, Youtube, Accordion: AccordionComponent, CodeGroup }}
               options={{
                 mdxOptions: {
                   remarkPlugins: [
@@ -253,7 +252,7 @@ export default async function BlogPage({ params }: Props) {
                     remarkDirective,
                     remarkCallout,
                     remarkYoutube,
-                    remarkFaq,
+                    remarkAccordion,
                     remarkCodeGroup,
                     remarkImage
                   ],

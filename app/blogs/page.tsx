@@ -127,7 +127,7 @@ export default async function BlogsPage() {
                       {formatDate(blog.date) && <span>{formatDate(blog.date)}</span>}
                       <span className="inline-flex items-center gap-1">
                         <Clock size={11} />
-                        {readingTime(blog.content)} min
+                        {readingTime(blog.body)} min
                       </span>
                     </div>
                     <h3 className="mb-1.5 text-xl font-medium transition-colors sm:text-2xl [font-family:var(--font-display)] [color:var(--ink)] group-hover:[color:var(--teal-deep)]">

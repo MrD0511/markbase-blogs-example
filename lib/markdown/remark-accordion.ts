@@ -1,23 +1,23 @@
 import { visit } from 'unist-util-visit'
 
-export function remarkFaq() {
+export function remarkAccordion() {
   return (tree: any) => {
     visit(tree, 'containerDirective', (node: any) => {
-      if (node.name !== 'faq') {
+      if (node.name !== 'accordion') {
         return
       }
 
-      const question = node.attributes?.question ?? 'Enter your question here'
+      const label = node.attributes?.label ?? 'an untitled label'
 
       node.type = 'mdxJsxFlowElement'
 
-      node.name = 'Faq'
+      node.name = 'Accordion'
 
       node.attributes = [
         {
           type: 'mdxJsxAttribute',
-          name: 'question', 
-          value: question,
+          name: 'label', 
+          value: label,
         }
       ]
     })

@@ -7,8 +7,6 @@ export async function POST(request) {
     try {
         const body = await request.text();
 
-        console.log("Received webhook payload:", body);
-
         const signature = request.headers.get("x-signature");
 
         if (!signature) {
@@ -33,12 +31,8 @@ export async function POST(request) {
 
         const payload = JSON.parse(body);
 
-        console.log("Parsed webhook payload:", payload);
-
         const { type, data } = payload;
         const { slug } = data;
-
-        console.log(`Processing webhook of type: ${type} for slug: ${slug}`);
 
         if (!slug) {
             return Response.json(
